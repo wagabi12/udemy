@@ -1,0 +1,94 @@
+---
+title: "salaries_solutions in R"
+author: "Sripad Kulkarni"
+date: "11/20/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE, echo=FALSE, cache=FALSE, results=FALSE, warning=FALSE, comment=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### load the libraries
+```{r message=FALSE, warning=FALSE}
+pacman::p_load(tidyverse, stringr)
+```
+
+
+### load the dataset
+```{r message=FALSE, warning=FALSE}
+sal <- read_csv("/Users/sripadk/Desktop/Salaries.csv")
+head(sal)
+```
+
+### Average Basepay
+```{r message=FALSE, warning=FALSE}
+mean(sal$BasePay, na.rm = T)
+```
+
+### What is the highest amount of OvertimePay in the dataset?
+```{r message=FALSE, warning=FALSE}
+max(sal$OvertimePay, na.rm = T)
+```
+
+### What is the job title of JOSEPH DRISCOLL ?
+```{r message=FALSE, warning=FALSE}
+sal %>% 
+  filter(EmployeeName == 'JOSEPH DRISCOLL') %>% 
+  select(Id, JobTitle)
+```
+
+### How much does JOSEPH DRISCOLL make (including benefits)? 
+```{r message=FALSE, warning=FALSE}
+sal %>% 
+  filter(EmployeeName == 'JOSEPH DRISCOLL') %>% 
+  select(TotalPayBenefits)
+```
+
+### What is the name of highest paid person (including benefits)? 
+```{r message=FALSE, warning=FALSE}
+sal %>% 
+  filter(TotalPayBenefits == max(TotalPayBenefits))
+```
+
+### What is the name of lowest paid person (including benefits)? 
+```{r message=FALSE, warning=FALSE}
+sal %>% 
+  filter(TotalPayBenefits == min(TotalPayBenefits))
+```
+
+### What was the average (mean) BasePay of all employees per year? (2011-2014) ?
+```{r message=FALSE, warning=FALSE}
+sal %>% 
+  group_by(Year) %>% 
+  summarise(mean_base_pay = mean(BasePay, na.rm = TRUE)) %>% 
+  ungroup()
+```
+
+### How many unique job titles are there?
+```{r message=FALSE, warning=FALSE}
+sal %>% 
+  summarise(unique_title = n_distinct(JobTitle))
+```
+
+### What are the top 5 most common jobs?
+```{r message=FALSE, warning=FALSE}
+sal %>% 
+  group_by(JobTitle) %>% 
+  summarise(ct = n_distinct(Id)) %>% 
+  arrange(desc(ct)) %>% 
+  head(5) %>% 
+  ungroup()
+```
+
+### How many people have the word Chief in their job title?
+```{r message=FALSE, warning=FALSE}
+sal %>% 
+  mutate(JobTitle = tolower(JobTitle)) %>% 
+  summarise(ct = sum(str_detect(JobTitle, "chief")))
+```
+
+### Is there a correlation between length of the Job Title string and Salary?
+```{r message=FALSE, warning=FALSE}
+cor(str_count(sal$JobTitle), sal$TotalPayBenefits)
+```

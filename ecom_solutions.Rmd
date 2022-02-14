@@ -1,0 +1,97 @@
+---
+title: "ecommerce_purchase_solutions in R"
+author: "Sripad Kulkarni"
+date: "24/11/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE, echo=FALSE, cache=FALSE, results=FALSE, warning=FALSE, comment=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### load the libraries
+```{r message=FALSE, warning=FALSE}
+pacman::p_load(tidyverse, stringr)
+```
+
+
+### load the dataset
+```{r message=FALSE, warning=FALSE}
+ecom <- read_csv("/Users/sripadk/Desktop/Ecommerce")
+head(ecom)
+```
+### What is the average Purchase Price?
+```{r message=FALSE, warning=FALSE}
+mean(ecom$`Purchase Price`, na.rm = T)
+```
+
+### What were the highest and lowest purchase prices? **
+```{r message=FALSE, warning=FALSE}
+max(ecom$`Purchase Price`, na.rm = T)
+```
+
+```{r message=FALSE, warning=FALSE}
+min(ecom$`Purchase Price`, na.rm = T)
+```
+
+### How many people have English 'en' as their Language of choice on the website?
+```{r message=FALSE, warning=FALSE}
+ecom %>% 
+  filter(Language == 'en') %>% 
+  count()
+```
+
+### How many people have the job title of "Lawyer" ? **
+```{r message=FALSE, warning=FALSE}
+ecom %>% 
+  filter(Job == 'Lawyer') %>% 
+  count()
+```
+
+### How many people made the purchase during the AM and how many people made the purchase during PM ?
+```{r message=FALSE, warning=FALSE}
+ecom %>% 
+  count(`AM or PM`) %>% 
+  ungroup()
+```
+
+### What are the 5 most common Job Titles?
+```{r message=FALSE, warning=FALSE}
+ecom %>% 
+  count(Job, sort = T) %>% 
+  head(5)
+```
+
+### Someone made a purchase that came from Lot: "90 WT" , what was the Purchase Price for this transaction?
+```{r message=FALSE, warning=FALSE}
+ecom %>% 
+  filter(Lot == '90 WT') %>% 
+  select(`Purchase Price`)
+```
+
+### What is the email of the person with the following Credit Card Number: 4926535242672853
+```{r message=FALSE, warning=FALSE}
+ecom %>% 
+  filter(`Credit Card` == 4926535242672853) %>% 
+  select(`Email`)
+```
+
+### How many people have American Express as their Credit Card Provider *and* made a purchase above $95 ?
+```{r message=FALSE, warning=FALSE}
+ecom %>% 
+  filter(`CC Provider` == 'American Express' & `Purchase Price` > 95) %>% 
+  count()
+```
+
+### How many people have a credit card that expires in 2025?
+```{r message=FALSE, warning=FALSE}
+sum(str_count(ecom$`CC Exp Date`, '25' ))
+```
+
+### Hard: What are the top 5 most popular email providers/hosts
+```{r message=FALSE, warning=FALSE}
+ecom %>% 
+  mutate(domain = sub('.*@', "",ecom$Email)) %>% 
+  count(domain, sort = T) %>% 
+  head(5)
+```
